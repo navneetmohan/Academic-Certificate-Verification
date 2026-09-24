@@ -1,0 +1,29 @@
+sequenceDiagram
+    autonumber
+    actor Verifier as Employer / Third Party
+    participant UI as Verification Portal
+    participant API as FastAPI Backend
+    participant Hash as Hashing Service
+    participant Contract as Smart Contract (Solidity)
+    participant DB as Relational DB (Public Info)
+
+    Verifier->>UI: Upload PDF Degree or Enter Cert ID
+    UI->>API: POST /api/verify (file multipart or cert_id)
+    opt PDF Document Uploaded
+        API->>Hash: Compute SHA-256 Digest of Uploaded File
+        Hash-->>API: Return calculated_hash
+    end
+    API->>Contract: verifyCertificate(certId, calculated_hash)
+    Contract-->>API: Returns (exists, hashMatches, revoked, issuer, issuedAt)
+    alt Certificate Does Not Exist
+        API-->>UI: Verdict: NOT_FOUND (No blockchain record)
+    else Hash Mismatch (hashMatches == false)
+        API-->>UI: Verdict: INVALID / MODIFIED (Cryptographic Tampering Detected)
+    else Revoked (revoked == true)
+        API-->>UI: Verdict: REVOKED (Previously issued but revoked by university)
+    else Valid & Active
+        API->>DB: Query institution public name & degree
+        DB-->>API: Metadata
+        API-->>UI: Verdict: VALID (Authenticity Cryptographically Proven)
+    end
+    UI-->>Verifier: Render Big Visual Status Card & Blockchain Proof

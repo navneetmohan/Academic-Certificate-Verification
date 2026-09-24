@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    actor Admin as Issuing Institution Admin
+    participant UI as React Frontend
+    participant API as FastAPI Backend
+    participant Contract as Smart Contract (Solidity)
+    participant Chain as Hardhat EVM
+    participant DB as Relational Database
+
+    Admin->>UI: Click Revoke on Certificate Registry
+    UI->>Admin: Prompt Confirmation Modal
+    Admin->>UI: Confirm Revocation
+    UI->>API: POST /api/certificates/{id}/revoke (JWT Bearer)
+    API->>API: Ensure calling admin belongs to issuing institution
+    API->>Contract: revokeCertificate(certId) signed by Issuer Private Key
+    Contract->>Contract: Verify caller == originalIssuer
+    Contract->>Contract: Verify certificate exists and revoked == false
+    Contract->>Chain: Set cert.revoked = true
+    Chain-->>Contract: Emit CertificateRevoked
+    Contract-->>API: Transaction Receipt (txHash, blockNumber)
+    API->>DB: Update cert.revoked = true & record REVOKE transaction
+    API-->>UI: Return updated certificate status
+    UI-->>Admin: Show REVOKED status badge

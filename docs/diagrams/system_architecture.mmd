@@ -1,0 +1,30 @@
+flowchart TD
+    subgraph Users ["Actors & User Interfaces"]
+        A[Institution Admin] -->|Issue / Revoke| B[React Frontend Dashboard]
+        L[Student Graduate] -->|View & Download| B
+        M[Employer / Third-Party Verifier] -->|Upload PDF / Enter ID / Scan QR| B
+    end
+
+    subgraph Backend ["FastAPI Backend Application"]
+        B --> C[FastAPI REST API]
+        C --> D[Certificate Generator Engine]
+        D -->|Generate Tamper-Proof Document| E[PDF Certificate + QR Code]
+        E -->|Cryptographic Hash Stream| F[SHA-256 Hashing Engine]
+        C --> G[Auth Service & JWT Provider]
+        C --> H[Verification Service]
+        F --> I[Blockchain Web3 Service]
+    end
+
+    subgraph Storage ["Off-Chain Storage Layer"]
+        C --> J[(Relational Database: PostgreSQL / SQLite)]
+        E --> K[Encrypted Local File Storage]
+    end
+
+    subgraph Blockchain ["On-Chain Immutable Ledger"]
+        I -->|Sign Transaction with Issuer Key| N[AcademicCertificateRegistry Smart Contract]
+        N --> O[Ethereum Virtual Machine EVM / Hardhat Localnet]
+        H -->|Zero-Gas State Verification Call| N
+    end
+
+    N -.->|Immutable Proof Verdict: VALID / INVALID / REVOKED| H
+    H --> B

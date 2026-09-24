@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cert_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: certuser
+      POSTGRES_PASSWORD: certpassword
+      POSTGRES_DB: certdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U certuser -d certdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cert_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://certuser:certpassword@db:5432/certdb
+      - BLOCKCHAIN_RPC_URL=http://host.docker.internal:8545
+      - CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+      - DEFAULT_INSTITUTION_WALLET=0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+      - ISSUER_PRIVATE_KEY=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+      - DEFAULT_INSTITUTION_EMAIL=admin@university.edu
+      - DEFAULT_INSTITUTION_PASSWORD=adminpassword123
+      - JWT_SECRET=super-secret-academic-certificate-verification-jwt-key-2026
+      - CERTIFICATE_STORAGE_PATH=/app/certificates
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./certificates:/app/certificates
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cert_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

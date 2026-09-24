@@ -1,0 +1,14 @@
+flowchart LR
+    A[Student / Degree Metadata] -->|ReportLab Generator| B[PDF Document Binary]
+    B -->|hashlib.sha256| C[SHA-256 Digest 0x... 32 Bytes]
+    B -->|Saved to Filesystem| D[certificates/CERT-YYYY-XXXX.pdf]
+    A -->|Saved to Database| E[(PostgreSQL / SQLite Database)]
+    C -->|Web3 RPC Call| F[Smart Contract issueCertificate]
+    F -->|Recorded in Block| G[Hardhat Blockchain State]
+    
+    H[Verifier Uploaded PDF] -->|SHA-256 Engine| I[Calculated Hash]
+    G -->|On-Chain Hash| J{Hash Comparison}
+    I --> J
+    J -->|Matches & Not Revoked| K[VALID / AUTHENTIC]
+    J -->|Mismatch| L[INVALID / MODIFIED]
+    J -->|Revoked == True| M[REVOKED]

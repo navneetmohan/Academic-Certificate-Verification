@@ -1,0 +1,40 @@
+erDiagram
+    INSTITUTIONS ||--o{ CERTIFICATES : "issues"
+    CERTIFICATES ||--o{ BLOCKCHAIN_TRANSACTIONS : "anchors"
+
+    INSTITUTIONS {
+        int id PK
+        string name
+        string wallet_address UK
+        string email UK
+        string hashed_password
+        boolean is_authorized
+        datetime created_at
+    }
+
+    CERTIFICATES {
+        int id PK
+        string certificate_id UK
+        string student_name
+        string student_id
+        string degree
+        string department
+        int institution_id FK
+        int graduation_year
+        string certificate_type
+        string issue_date
+        string file_path
+        string certificate_hash
+        string blockchain_tx_hash
+        boolean revoked
+        datetime created_at
+    }
+
+    BLOCKCHAIN_TRANSACTIONS {
+        int id PK
+        string certificate_id FK
+        string transaction_hash UK
+        string transaction_type
+        int block_number
+        datetime timestamp
+    }

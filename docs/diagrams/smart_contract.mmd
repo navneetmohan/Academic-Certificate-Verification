@@ -1,0 +1,29 @@
+classDiagram
+    class Ownable {
+        -address _owner
+        +owner() address
+        +transferOwnership(address)
+        +renounceOwnership()
+    }
+
+    class AcademicCertificateRegistry {
+        -mapping~bytes32, Certificate~ certificates
+        +mapping~address, bool~ authorizedIssuers
+        +authorizeIssuer(address _issuer)
+        +revokeIssuer(address _issuer)
+        +isAuthorizedIssuer(address _issuer) bool
+        +issueCertificate(string _certificateId, bytes32 _certificateHash)
+        +verifyCertificate(string _certificateId, bytes32 _certificateHash) tuple
+        +revokeCertificate(string _certificateId)
+        +getCertificateStatus(string _certificateId) tuple
+    }
+
+    class Certificate {
+        +bytes32 certificateHash
+        +address issuer
+        +uint256 issuedAt
+        +bool revoked
+    }
+
+    Ownable <|-- AcademicCertificateRegistry
+    AcademicCertificateRegistry *-- Certificate

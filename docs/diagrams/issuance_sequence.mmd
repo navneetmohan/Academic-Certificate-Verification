@@ -1,0 +1,25 @@
+sequenceDiagram
+    autonumber
+    actor Admin as Institution Admin
+    participant UI as React Frontend
+    participant API as FastAPI Backend
+    participant Engine as PDF & Hash Engine
+    participant DB as Relational Database
+    participant Contract as Smart Contract (Solidity)
+    participant Chain as Hardhat EVM
+
+    Admin->>UI: Fill Student Degree Details & Click Issue
+    UI->>API: POST /api/certificates (JWT Bearer)
+    API->>API: Verify Issuer Wallet Authorization
+    API->>Engine: Generate Certificate PDF (ReportLab + QR Code)
+    Engine->>Engine: Calculate SHA-256 Digest (bytes32)
+    Engine->>API: Return PDF Bytes & 0x-Hash
+    API->>Contract: issueCertificate(certId, certHash)
+    Contract->>Contract: Verify Caller == authorizedIssuer
+    Contract->>Contract: Verify certId does not exist
+    Contract->>Chain: Store {certHash, issuer, block.timestamp, revoked: false}
+    Chain-->>Contract: Emit CertificateIssued
+    Contract-->>API: Transaction Receipt (txHash, blockNumber)
+    API->>DB: Save off-chain metadata & tx record
+    API-->>UI: Return Certificate Response (ID, txHash, Hash)
+    UI-->>Admin: Display Success Badge & Download Link
