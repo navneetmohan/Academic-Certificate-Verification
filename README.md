@@ -282,3 +282,14 @@ Run the automated end-to-end integration test exercising all 11 lifecycle stages
 - **W3C Verifiable Credentials & DIDs**: Standardizing credential schemas for decentralized identity wallets.
 - **Zero-Knowledge Proofs (ZK-SNARKs)**: Enabling students to prove GPA thresholds without revealing actual scores.
 - **Soulbound Tokens (EIP-5114)**: Optional non-transferable NFT representation of academic degrees.
+
+---
+
+## 23. Project Documentation & Defense Resources
+
+- **[Viva Voce & Technical Defense Q&A Guide](file:///z:/Blockchain_Project/docs/viva_questions_and_answers.md)**: Master document with 50+ examiner questions, technical deep dives, and defense strategies.
+- **[Comprehensive System Manual](file:///z:/Blockchain_Project/complete_system_guide.md)**: Full operator walkthrough, configuration guide, and system specifications.
+- **[Architecture Deep Dive](file:///z:/Blockchain_Project/docs/architecture.md)**: Detailed component interaction and data flow diagrams.
+- **[Testing & Verification Report](file:///z:/Blockchain_Project/docs/testing.md)**: Full test matrices for smart contracts (17/17) and backend (12/12).
+- **[Privacy & Zero-PII Compliance](file:///z:/Blockchain_Project/docs/privacy.md)**: GDPR and FERPA compliance design.
+
